@@ -1,4 +1,4 @@
-import { serve, Server, ServerRequest, exists, path, readFileStr } from '../deps.ts'
+import { serve, Server, ServerRequest, exists, path, readFileStr } from './deps.ts'
 
 export type RequestHandler = (request: ServerRequest) => any
 export type ListenCallback = (error?: any) => void
