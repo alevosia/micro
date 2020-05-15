@@ -1,7 +1,7 @@
 import { serve, Server, ServerRequest } from '../deps.ts'
 
-type RequestHandler = (request: ServerRequest) => any
-type ListenCallback = (error?: any) => void
+export type RequestHandler = (request: ServerRequest) => any
+export type ListenCallback = (error?: any) => void
 
 export enum HTTPMethod {
     GET = 'GET',
