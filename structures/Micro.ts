@@ -20,7 +20,7 @@ export interface Static {
     handler: RequestHandler
 }
 
-class Micro {
+export class Micro {
 
     private routes: Route[]
     private staticConfig: Static | null
