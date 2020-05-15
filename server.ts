@@ -3,7 +3,7 @@
 const PORT = 5000
 
 import { path, readFileStr } from './deps.ts'
-import { Micro } from './mod.ts'
+import { Micro } from './structures/Micro.ts'
 
 const app = new Micro()
 
