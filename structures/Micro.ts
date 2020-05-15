@@ -1,4 +1,4 @@
-import { serve, Server, ServerRequest } from '../deps.ts'
+import { serve, Server, ServerRequest, exists, path, readFileStr } from '../deps.ts'
 
 export type RequestHandler = (request: ServerRequest) => any
 export type ListenCallback = (error?: any) => void
@@ -9,18 +9,25 @@ export enum HTTPMethod {
 }
 
 export interface Route {
-    method: HTTPMethod,
-    path: string,
+    method: HTTPMethod
+    path: string
     requestHandler: RequestHandler
 }
 
-class Micro extends Function {
+export interface Static {
+    path: string
+    directory: string,
+    handler: RequestHandler
+}
+
+class Micro {
 
     private routes: Route[]
+    private staticConfig: Static | null
     private middlewares: RequestHandler[]
 
     constructor() {
-        super()
+        this.staticConfig = null
         this.middlewares = []
         this.routes = []
     }
@@ -45,6 +52,34 @@ class Micro extends Function {
         this.middlewares.push(requestHandler)
     }
 
+    static(staticPath: string, staticDirectory: string) {
+
+        const staticHandler = async (request: ServerRequest) => {
+
+            const urlArr = request.url.split('/').slice(2)
+            const fileUrl = urlArr.reduce((previous, current) => {
+                return previous.concat(`/${current}`)
+            }, '')
+
+            const staticFilePath = path.join(staticDirectory, fileUrl)
+            
+            console.log(staticFilePath)
+
+            if (!await exists(staticFilePath)) {
+                return request.respond({ status: 404, body: 'Static File NOT Found'})
+            }
+        
+            const file = await readFileStr(staticFilePath)
+            return request.respond({ body: file })
+        }
+
+        this.staticConfig = {
+            path: staticPath,
+            directory: staticDirectory,
+            handler: staticHandler
+        }
+    }
+
     async listen(port: number, callback?: ListenCallback) {
 
         console.log('\n --- ROUTES --- ')
@@ -67,6 +102,9 @@ class Micro extends Function {
 
         for await (const request of server) {
             
+            console.log(request.url)
+            console.log(this.staticConfig?.path)
+
             // call each applied middleware
             for (const mw of this.middlewares) {
                 mw(request)
@@ -76,6 +114,13 @@ class Micro extends Function {
 
             // find the request handler that matches the request paramaters
             for (const route of this.routes) {
+
+                if (this.staticConfig && this.staticConfig.path && request.url.startsWith(this.staticConfig.path)) {
+                    found = true
+                    this.staticConfig.handler(request)
+                    break
+                }
+
                 if (route.method === request.method && route.path === request.url) {
                     found = true
                     route.requestHandler(request)

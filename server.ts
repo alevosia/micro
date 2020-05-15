@@ -1,5 +1,8 @@
+// SAMPLE SERVER
+
 const PORT = 5000
 
+import { path, readFileStr } from './/deps.ts'
 import Micro from './structures/Micro.ts'
 
 const app = new Micro()
@@ -9,8 +12,12 @@ app.use((request) => {
     console.log(`${request.method} ${request.url}`)
 })
 
-app.get('/', (request) => {
-    request.respond({ body: 'Home Page'})
+app.static('/static', path.join(Deno.cwd(), 'public'))
+
+app.get('/', async (request) => {
+    const filePath = path.join(Deno.cwd(), 'public', 'index.html')
+    const file = await readFileStr(filePath)
+    return request.respond({ body: file })
 })
 
 app.get('/auth', (request) => {
