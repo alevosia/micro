@@ -9,7 +9,7 @@ A lite Deno http server framework
 ```ts
 // server.ts
 
-import { Micro } from 'https://raw.githubusercontent.com/alevosia/micro/master/structures/Micro.ts'
+import { Micro } from 'https://raw.githubusercontent.com/alevosia/micro/master/Micro.ts'
 
 const app = new Micro()
 const PORT = 5000
