@@ -62,8 +62,6 @@ export class Micro {
             }, '')
 
             const staticFilePath = path.join(staticDirectory, fileUrl)
-            
-            console.log(staticFilePath)
 
             if (!await exists(staticFilePath)) {
                 return request.respond({ status: 404, body: 'Static File NOT Found'})
@@ -82,9 +80,6 @@ export class Micro {
 
     async listen(port: number, callback?: ListenCallback) {
 
-        console.log('\n --- ROUTES --- ')
-        console.log(this.routes)
-
         let server: Server
 
         try {
@@ -101,9 +96,6 @@ export class Micro {
         }
 
         for await (const request of server) {
-            
-            console.log(request.url)
-            console.log(this.staticConfig?.path)
 
             // call each applied middleware
             for (const mw of this.middlewares) {
@@ -133,7 +125,7 @@ export class Micro {
             }
         }
 
-        console.log(`Server stopped listening...`)
+        console.log(`Server stopped listening on port ${port}`)
     }
 }
 
