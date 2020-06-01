@@ -3,7 +3,7 @@
 </p>
 
 # Micro
-A lite Deno http server framework
+A lite Deno http server wrapper
 
 ## Usage
 ```ts
